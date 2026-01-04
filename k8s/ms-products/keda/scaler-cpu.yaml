@@ -1,0 +1,15 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ms-products-web-scaler
+  namespace: appdemo
+spec:
+  scaleTargetRef:
+    name: ms-products # <-- Apunta al WEB
+  minReplicaCount: 1
+  maxReplicaCount: 5
+  triggers:
+    - type: cpu
+      metricType: Utilization
+      metadata:
+        value: "50" # Escalar si pasa el 50% de CPU

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  namespace: appdemo
+  annotations:
+    # Esta línea es opcional en K3d moderno
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-gateway-service # Debe coincidir con tu service.yaml
+            port:
+              number: 80              # El puerto DEL SERVICIO, no del contenedor

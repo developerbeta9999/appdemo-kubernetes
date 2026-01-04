@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-products-worker # Nombre distinto
+  namespace: appdemo
+spec:
+  replicas: 1 # KEDA controlará esto después
+  selector:
+    matchLabels:
+      app: ms-products-worker
+  template:
+    metadata:
+      labels:
+        app: ms-products-worker
+    spec:
+      containers:
+      - name: worker
+        image: app-demo-images/ms-products:v9 # <--- ¡LA MISMA IMAGEN!
+
+        # AQUÍ ESTÁ EL TRUCO: Sobrescribimos el comando de arranque
+        command: ["python", "manage.py", "run_consumer"]
+
+        env:
+        # Las mismas variables de entorno para que pueda hablar con la DB y Kafka
+        # --------DATABASE------------
+        - name: DB_HOST
+          value: "172.17.0.1"
+        - name: DB_PORT
+          value: "6432"
+        - name: POSTGRES_DB
+          value: "microservices_db"
+        - name: POSTGRES_USER
+          value: "admin"
+        - name: POSTGRES_PASSWORD
+          value: "securepassword123"
+        # --------KAFKA------------
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "172.17.0.1:9092"
+        # No necesita 'ports' ni 'readinessProbe' HTTP porque no es web

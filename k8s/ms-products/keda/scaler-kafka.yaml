@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ms-products-worker-scaler
+  namespace: appdemo
+spec:
+  scaleTargetRef:
+    name: ms-products-worker # <-- Apunta al WORKER
+  minReplicaCount: 0 # Puede apagarse si no hay trabajo (Scale to Zero)
+  maxReplicaCount: 10
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: "172.17.0.1:9092" # IP del Host (one_for_all)
+        consumerGroup: "products-group"     # Grupo de consumidores (lo definiremos en Django)
+        topic: "product-updates"            # El tópico que escucharemos
+        lagThreshold: "5"                   # Si hay más de 5 mensajes en espera, escala
+        offsetResetPolicy: "latest"

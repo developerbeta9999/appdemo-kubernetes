@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: appdemo
+spec:
+  replicas: 1 # Empezamos con 1, luego puedes escalar
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: app-demo-images/api-gateway:v4 # (en prod: tu-usuario-docker-hub/api-gateway:latest)
+        imagePullPolicy: IfNotPresent # (en prod: Always) con Always le indicamos que siempre busquea fuera
+        env:
+        - name: MS_PRODUCT_URL
+          value: "http://ms-products" # K8s DNS interno
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "172.17.0.1:9092"
+        ports:
+        - containerPort: 8000

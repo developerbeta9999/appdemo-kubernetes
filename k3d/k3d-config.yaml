@@ -1,0 +1,13 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: cluster-appdemo
+servers: 1 # VPS 1 (Master + Gateway + Jenkins)
+agents: 3  # VPS 3, 4, 5 (Workers para Apps)
+ports:
+  - port: 8080:80 # Mapeamos el puerto 80 del cluster al 8080 de tu laptop
+    nodeFilters:
+      - loadbalancer # en prod se usaria el ClusterIP enves de loadbalancer 
+options:
+  k3d:
+    wait: true

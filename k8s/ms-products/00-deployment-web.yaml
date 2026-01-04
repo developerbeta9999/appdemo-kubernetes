@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-products
+  namespace: appdemo
+spec:
+ # replicas: 3 #--> comentamos esto para que kubernetes le de automaticamente 1 replica pero quien se va a encargar de crear o reducir replicas será KEDA
+  selector:
+    matchLabels:
+      app: ms-products
+  template:
+    metadata:
+      labels:
+        app: ms-products
+    spec:
+      containers:
+      - name: ms-products
+        image: app-demo-images/ms-products:v9 # (en prod: tu-usuario-docker-hub/ms-products:latest)
+        env:
+        # EN LOCAL (Simulación):
+        - name: DB_HOST
+          value: "172.17.0.1" # en prod (usar la ip del VPS - persistencia y estado)
+        - name: DB_PORT
+          value: "6432" # <--- Apuntamos al PgBouncer
+        - name: POSTGRES_DB
+          value: "microservices_db"
+        - name: POSTGRES_USER
+          value: "admin"
+        - name: POSTGRES_PASSWORD
+          value: "securepassword123"
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "172.17.0.1:9092" # en prod (usar la ip del VPS - persistenci y estado)
+        ports:
+        - containerPort: 8000
+
+        # Con esto, si un pod tarda en arrancar, el estado se quedará en 0/1 Ready y el LoadBalancer no le mandará errores de conexión a tus usuarios.
+        readinessProbe:
+          tcpSocket:
+            port: 8000
+          initialDelaySeconds: 5  # Espera 5s antes de probar
+          periodSeconds: 5        # Prueba cada 5s
+
+        # --- CAPACIDAD DE CPU ---
+        resources:
+          requests:
+            cpu: "100m"  # Le garantizamos 0.1 CPU (el 100% de su base)
+            memory: "128Mi"
+          limits:
+            cpu: "500m"  # Nunca le dejes usar más de 0.5 CPU
+            memory: "256Mi"
+        # --------------------
+
+        #¿Qué significa 100m? Significa "100 milicores" (0.1 CPU).
+        #Si tu pod usa 50m (0.05 CPU), KEDA dirá: "Estás al 50%. Todo tranqui"
+        #Si tu pod usa 80m (0.08 CPU), KEDA dirá: "Estás al 80%. ¡ESCALAR!"
+
+        # EN PRODUCCIÓN REAL (VPS 2):
+        # - name: DB_HOST
+        #   value: "192.168.1.50" (La IP del VPS 2)
+        # - name: KAFKA_BOOTSTRAP_SERVERS
+        #   value: "192.168.1.50:9092"
