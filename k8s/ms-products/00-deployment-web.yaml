@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
       - name: ms-products
-        image: app-demo-images/ms-products:v9 # (en prod: tu-usuario-docker-hub/ms-products:latest)
+        image: appdemo-images/ms-products:latest # (en prod: tu-usuario-docker-hub/ms-products:latest)
         env:
         # EN LOCAL (Simulación):
         - name: DB_HOST
-          value: "172.17.0.1" # en prod (usar la ip del VPS - persistencia y estado)
+          value: "172.17.0.1" # en prod (usar la ip del VPS - shared resources)
         - name: DB_PORT
           value: "6432" # <--- Apuntamos al PgBouncer
         - name: POSTGRES_DB
@@ -29,7 +29,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: "securepassword123"
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "172.17.0.1:9092" # en prod (usar la ip del VPS - persistenci y estado)
+          value: "host.k3d.internal:9092" # en prod (usar la ip del VPS - persistenci y estado)
         ports:
         - containerPort: 8000
 

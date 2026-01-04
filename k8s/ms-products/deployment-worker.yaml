@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: app-demo-images/ms-products:v9 # <--- ¡LA MISMA IMAGEN!
+        image: appdemo-images/ms-products:latest # <--- ¡LA MISMA IMAGEN!
 
         # AQUÍ ESTÁ EL TRUCO: Sobrescribimos el comando de arranque
         command: ["python", "manage.py", "run_consumer"]
@@ -35,5 +35,5 @@ spec:
           value: "securepassword123"
         # --------KAFKA------------
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "172.17.0.1:9092"
+          value: "host.k3d.internal:9092"
         # No necesita 'ports' ni 'readinessProbe' HTTP porque no es web

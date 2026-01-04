@@ -11,7 +11,7 @@ spec:
   triggers:
     - type: kafka
       metadata:
-        bootstrapServers: "172.17.0.1:9092" # IP del Host (one_for_all)
+        bootstrapServers: "172.17.0.1:9092" # IP del Host (shared resources)
         consumerGroup: "products-group"     # Grupo de consumidores (lo definiremos en Django)
         topic: "product-updates"            # El tópico que escucharemos
         lagThreshold: "5"                   # Si hay más de 5 mensajes en espera, escala
