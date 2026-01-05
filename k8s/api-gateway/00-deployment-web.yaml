@@ -15,12 +15,12 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: appdemo-images/api-gateway:latest # (en prod: tu-usuario-docker-hub/api-gateway:latest)
+        image: appdemo-images/api-gateway:v1 # (en prod: tu-usuario-docker-hub/api-gateway:latest)
         imagePullPolicy: IfNotPresent # (en prod: Always) con Always le indicamos que siempre busquea fuera
         env:
         - name: MS_PRODUCT_URL
           value: "http://ms-products" # K8s DNS interno
         - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "host.k3d.internal:9092"
+          value: "host.k3d.internal:9093"
         ports:
         - containerPort: 8000

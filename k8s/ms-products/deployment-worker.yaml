@@ -14,26 +14,27 @@ spec:
         app: ms-products-worker
     spec:
       containers:
-      - name: worker
-        image: appdemo-images/ms-products:latest # <--- ¡LA MISMA IMAGEN!
+        - name: worker
+          image: appdemo-images/ms-products:v1 # <--- ¡LA MISMA IMAGEN!
+          imagePullPolicy: IfNotPresent # Cambiar a Always en producción si usas "latest"
 
-        # AQUÍ ESTÁ EL TRUCO: Sobrescribimos el comando de arranque
-        command: ["python", "manage.py", "run_consumer"]
+          # AQUÍ ESTÁ EL TRUCO: Sobrescribimos el comando de arranque
+          command: ["python", "manage.py", "run_consumer"]
 
-        env:
-        # Las mismas variables de entorno para que pueda hablar con la DB y Kafka
-        # --------DATABASE------------
-        - name: DB_HOST
-          value: "172.17.0.1"
-        - name: DB_PORT
-          value: "6432"
-        - name: POSTGRES_DB
-          value: "microservices_db"
-        - name: POSTGRES_USER
-          value: "admin"
-        - name: POSTGRES_PASSWORD
-          value: "securepassword123"
-        # --------KAFKA------------
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "host.k3d.internal:9092"
-        # No necesita 'ports' ni 'readinessProbe' HTTP porque no es web
+          env:
+            # Las mismas variables de entorno para que pueda hablar con la DB y Kafka
+            # --------DATABASE------------
+            - name: DB_HOST
+              value: "host.k3d.internal"
+            - name: DB_PORT
+              value: "6432"
+            - name: POSTGRES_DB
+              value: "microservices_db"
+            - name: POSTGRES_USER
+              value: "admin"
+            - name: POSTGRES_PASSWORD
+              value: "securepassword123"
+            # --------KAFKA------------
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "host.k3d.internal:9093"
+          # No necesita 'ports' ni 'readinessProbe' HTTP porque no es web
